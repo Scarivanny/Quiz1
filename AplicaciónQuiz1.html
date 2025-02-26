@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clasificador de Seres Vivos: Pseudocódigo vs Prompt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .output {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+
+        .comparison {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison > div {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Clasificador de Seres Vivos: Pseudocódigo vs Prompt</h1>
+        <p>Selecciona un ser vivo para ver el pseudocódigo y el prompt generado por IA.</p>
+
+        <!-- Sección de Selección -->
+        <div class="section">
+            <label for="ser-vivo">Selecciona un ser vivo:</label>
+            <select id="ser-vivo">
+                <option value="">-- Selecciona una opción --</option>
+            </select>
+            <button onclick="mostrarComparativa()">Mostrar Comparativa</button>
+        </div>
+
+        <!-- Sección de Comparativa -->
+        <div class="comparison">
+            <div>
+                <h2>Pseudocódigo</h2>
+                <div id="pseudocode-output" class="output"></div>
+            </div>
+            <div>
+                <h2>Prompt de IA</h2>
+                <div id="prompt-output" class="output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de seres vivos actualizada
+        const baseDatos = {
+            "seres_vivos": [
+                { "nombre": "Escherichia coli", "nombre_comun": "E. coli", "tipo": "Bacteria" },
+                { "nombre": "Streptococcus pneumoniae", "nombre_comun": "Neumococo", "tipo": "Bacteria" },
+                { "nombre": "Lactobacillus acidophilus", "nombre_comun": "Lactobacilo", "tipo": "Bacteria" },
+                { "nombre": "Bacillus subtilis", "nombre_comun": "Bacilo del heno", "tipo": "Bacteria" },
+                { "nombre": "Salmonella enterica", "nombre_comun": "Salmonella", "tipo": "Bacteria" },
+                { "nombre": "Mycobacterium tuberculosis", "nombre_comun": "Bacteria de la tuberculosis", "tipo": "Bacteria" },
+                { "nombre": "Vibrio cholerae", "nombre_comun": "Bacteria del cólera", "tipo": "Bacteria" },
+                { "nombre": "Penicillium chrysogenum", "nombre_comun": "Hongo del penicilio", "tipo": "Fungi" },
+                { "nombre": "Saccharomyces cerevisiae", "nombre_comun": "Levadura de cerveza", "tipo": "Fungi" },
+                { "nombre": "Aspergillus niger", "nombre_comun": "Moho negro", "tipo": "Fungi" },
+                { "nombre": "Candida albicans", "nombre_comun": "Cándida", "tipo": "Fungi" },
+                { "nombre": "Rhizopus stolonifer", "nombre_comun": "Moho del pan", "tipo": "Fungi" },
+                { "nombre": "Agaricus bisporus", "nombre_comun": "Champiñón", "tipo": "Fungi" },
+                { "nombre": "Arabidopsis thaliana", "nombre_comun": "Arabidopsis", "tipo": "Vegetal" },
+                { "nombre": "Zea mays", "nombre_comun": "Maíz", "tipo": "Vegetal" },
+                { "nombre": "Solanum lycopersicum", "nombre_comun": "Tomate", "tipo": "Vegetal" },
+                { "nombre": "Quercus robur", "nombre_comun": "Roble", "tipo": "Vegetal" },
+                { "nombre": "Eucalyptus globulus", "nombre_comun": "Eucalipto", "tipo": "Vegetal" },
+                { "nombre": "Oryza sativa", "nombre_comun": "Arroz", "tipo": "Vegetal" },
+                { "nombre": "Pinus sylvestris", "nombre_comun": "Pino silvestre", "tipo": "Vegetal" },
+                { "nombre": "Magnolia espinalii", "nombre_comun": "Hojarasco", "tipo": "Vegetal" },
+                { "nombre": "Cattleya trianae", "nombre_comun": "Orquídea Cattleya", "tipo": "Vegetal" },
+                { "nombre": "Panthera leo", "nombre_comun": "León", "tipo": "Animal" },
+                { "nombre": "Canis lupus familiaris", "nombre_comun": "Perro", "tipo": "Animal" },
+                { "nombre": "Felis catus", "nombre_comun": "Gato", "tipo": "Animal" },
+                { "nombre": "Gallus gallus", "nombre_comun": "Gallina", "tipo": "Animal" },
+                { "nombre": "Homo sapiens", "nombre_comun": "Humano", "tipo": "Animal" },
+                { "nombre": "Drosophila melanogaster", "nombre_comun": "Mosca de la fruta", "tipo": "Animal" },
+                { "nombre": "Mus musculus", "nombre_comun": "Ratón", "tipo": "Animal" },
+                { "nombre": "Rattus norvegicus", "nombre_comun": "Rata", "tipo": "Animal" },
+                { "nombre": "Equus ferus caballus", "nombre_comun": "Caballo", "tipo": "Animal" },
+                { "nombre": "Oryctolagus cuniculus", "nombre_comun": "Conejo", "tipo": "Animal" },
+                { "nombre": "Bos taurus", "nombre_comun": "Vaca", "tipo": "Animal" },
+                { "nombre": "Sus scrofa domesticus", "nombre_comun": "Cerdo", "tipo": "Animal" },
+                { "nombre": "Apis mellifera", "nombre_comun": "Abeja", "tipo": "Animal" },
+                { "nombre": "Carcharodon carcharias", "nombre_comun": "Tiburón blanco", "tipo": "Animal" },
+                { "nombre": "Chelonia mydas", "nombre_comun": "Tortuga verde", "tipo": "Animal" },
+                { "nombre": "Balaenoptera musculus", "nombre_comun": "Ballena azul", "tipo": "Animal" },
+                { "nombre": "Gorilla gorilla", "nombre_comun": "Gorila", "tipo": "Animal" },
+                { "nombre": "Papio anubis", "nombre_comun": "Babuino", "tipo": "Animal" },
+                { "nombre": "Tyrannosaurus rex", "nombre_comun": "Tiranosaurio", "tipo": "Animal" },
+                { "nombre": "Velociraptor mongoliensis", "nombre_comun": "Velociraptor", "tipo": "Animal" },
+                { "nombre": "Strigops habroptilus", "nombre_comun": "Kakapo", "tipo": "Animal" },
+                { "nombre": "Ornithorhynchus anatinus", "nombre_comun": "Ornitorrinco", "tipo": "Animal" },
+                { "nombre": "Phascolarctos cinereus", "nombre_comun": "Koala", "tipo": "Animal" },
+                { "nombre": "Didelphis virginiana", "nombre_comun": "Zarigüeya", "tipo": "Animal" },
+                { "nombre": "Phyllobates bicolor", "nombre_comun": "Rana dardo venenosa de patas negras", "tipo": "Animal" },
+                { "nombre": "Brachycephalus ephippium", "nombre_comun": "Rana de lluvia", "tipo": "Animal" },
+                { "nombre": "Atta cephalotes", "nombre_comun": "Hormiga cortadora de hojas", "tipo": "Animal" }
+            ]
+        };
+
+        // Llenar el select con los seres vivos
+        const selectSerVivo = document.getElementById("ser-vivo");
+        baseDatos.seres_vivos.forEach(ser => {
+            const option = document.createElement("option");
+            option.value = ser.nombre;
+            option.textContent = `${ser.nombre_comun} (${ser.nombre})`;
+            selectSerVivo.appendChild(option);
+        });
+
+        // Función para mostrar la comparativa
+        function mostrarComparativa() {
+            const nombreSerVivo = selectSerVivo.value;
+            const pseudocodeOutput = document.getElementById("pseudocode-output");
+            const promptOutput = document.getElementById("prompt-output");
+
+            if (!nombreSerVivo) {
+                pseudocodeOutput.textContent = "Por favor, selecciona un ser vivo.";
+                promptOutput.textContent = "";
+                return;
+            }
+
+            const serVivo = baseDatos.seres_vivos.find(ser => ser.nombre === nombreSerVivo);
+
+            // Pseudocódigo
+            pseudocodeOutput.textContent = `
+                Si el ser vivo es "${serVivo.nombre_comun}":
+                    Mostrar "Pertenece al reino: ${serVivo.tipo}"
+            `;
+
+            // Prompt de IA
+            promptOutput.textContent = `
+                ¿A qué reino pertenece el ser vivo "${serVivo.nombre_comun}" (${serVivo.nombre})?
+                Respuesta: Pertenece al reino ${serVivo.tipo}.
+            `;
+        }
+    </script>
+</body>
+</html>
